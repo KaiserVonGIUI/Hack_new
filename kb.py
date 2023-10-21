@@ -8,6 +8,12 @@ menu_yd = [[InlineKeyboardButton(text="Да", callback_data="yes_button")],
            ]
 menu_yd = InlineKeyboardMarkup(inline_keyboard=menu_yd)
 
+menu_profil = [[InlineKeyboardButton(text="Профиль", callback_data="profile_view")],
+               [InlineKeyboardButton(text="Магазин", callback_data="shop_page")],
+               [InlineKeyboardButton(text="Баланс", callback_data="balance")],
+               [InlineKeyboardButton(text="Передача валюты", callback_data="Valute_sharing")],
+               [InlineKeyboardButton(text="Проверить заказы", callback_data="zakaz_view")]]
+
 """ menu = [
     [InlineKeyboardButton(text="📝 Генерировать текст", callback_data="generate_text"),
     InlineKeyboardButton(text="🖼 Генерировать изображение", callback_data="generate_image")],

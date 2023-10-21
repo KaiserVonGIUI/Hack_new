@@ -71,11 +71,3 @@ async def vod_name3(msg: Message, state: FSMContext):
 async def profil(msg: Message, state: FSMContext):
     #await msg.answer("Добро пожаловать,", profil.name2, " ", profil.name3, " отдел ", profil.otdel)
     await msg.answer(f"{Profil.name3} {Profil.name2} {Profil.name1} {Profil.otdel}")
-
-
-"""
-@router.message(F.text == "Меню")
-@router.message(F.text == "Выйти в меню")
-@router.message(F.text == "◀️ Выйти в меню")
-async def menu(msg: Message):
-    await msg.answer(text.menu, reply_markup=kb.menu)"""

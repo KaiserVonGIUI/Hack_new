@@ -53,8 +53,14 @@ menu_admin = [[InlineKeyboardButton(text="Посмотреть профиль п
                [InlineKeyboardButton(text="Посмотреть список товаров", callback_data="shop_tovari_view")]]
 menu_admin = InlineKeyboardMarkup(inline_keyboard=menu_admin)
 
-button_vibor_admin1 = [[InlineKeyboardButton(text="Продлить заказ", callback_data="vibor1_admin")]]
+button_vibor_admin1 = [[InlineKeyboardButton(text="Выбрать", callback_data="vibor1_admin")]]
 button_vibor_admin1 = InlineKeyboardMarkup(inline_keyboard=button_vibor_admin1)
+
+but_cont = [[InlineKeyboardButton(text="Продолжить", callback_data="continue")]]
+but_cont = InlineKeyboardMarkup(inline_keyboard=but_cont)
+
+but_cont1 = [[InlineKeyboardButton(text="Продолжить", callback_data="continue1")]]
+but_cont1 = InlineKeyboardMarkup(inline_keyboard=but_cont1)
 
 menu_admin2 = [[InlineKeyboardButton(text="Изменить фамилию пользователя", callback_data="admin_edit_name1")], #+
                [InlineKeyboardButton(text="Изменить имя пользователя", callback_data="admin_edit_name2")], #+

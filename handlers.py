@@ -18,10 +18,10 @@ id_tov = -1
 itog_price = 0
 id_zakaz = -1
 id_polzovatelya = -1
-fl1 = 1
-fl2 = 1
+fl1 = State()
+fl2 = State()
 flag_prodlenia = False
-afl1 = 1
+afl1 = State()
 
 def convert_to_binary_data(filename):
     # Преобразование данных в двоичный формат
@@ -108,9 +108,9 @@ global name1
 global name2
 global name3
 global otdel
-
-info = cursor1.execute('SELECT * FROM Users WHERE id_tg=?', (Profil.id_tg))
-if info.fetchone() is None:
+#info.fetchone()
+#info = cursor1.execute('SELECT * FROM Users WHERE id_tg=?', (Profil.id_tg))
+if False:
     @router.message(Command("start"))
     async def start_handler(msg: Message, state: FSMContext):
         await msg.answer(text.greet)
@@ -168,7 +168,7 @@ if info.fetchone() is None:
 
 
 else:
-    @router.message(Command("start"))
+    @router.message(Command("start1"))
     async def start_avtorisovaniy(msg: Message):
         Profil.id_tg = msg.from_user.id
         await msg.answer(text.welcome, reply_markup=kb.menu_balance)
@@ -176,15 +176,15 @@ else:
 
     cursor1.execute('SELECT * FROM Users WHERE id_tg=?', (Profil.id_tg))
     users1 = cursor1.fetchall()
-    Profil.id_tg = users1[1]
-    Profil.name1 = users1[2]
-    Profil.name2 = users1[3]
-    Profil.name3 = users1[4]
-    Profil.otdel = users1[5]
-    Profil.admin = users1[6]
-    Profil.bal = users1[7]
+    Profil.id_tg = users1[0][1]
+    Profil.name1 = users1[0][2]
+    Profil.name2 = users1[0][3]
+    Profil.name3 = users1[0][4]
+    Profil.otdel = users1[0][5]
+    Profil.admin = users1[0][6]
+    Profil.bal = users1[0][7]
 
-    if Profil.admin == False:
+    if Profil.admin == 0:
         @router.callback_query(F.data == "main_menu") #оснвное меню
         async def start_polzovatel(msg: Message):
             await msg.answer(f"Добро пожаловать, {Profile.name2} {Profil.name3}! Выберите необходимое действие", reply_markup=kb.menu_profil)
@@ -388,205 +388,204 @@ else:
                 id_polzovatelya = row[0]
                 await msg.answer("", reply_markup=kb.menu_balance)
 
-            @router.callback_query(F.data == "vibor1_admin")
-            async def vibor_polzovatelya_admin(msg: Message):
-                cursor1.execute('SELECT * FROM Users WHERE id=?', (id_polzovatelya,))
-                polzovatel = cursor1.fetchall()
-                await msg.answer(f"ID: {polzovatel[0]}\nФамилия: {polzovatel[1]}\nИмя: {polzovatel[2]}\nОтчество: {polzovatel[3]}\nОтдел: {polzovatel[4]}\nАдминистратор: нет\nБаланс: {polzovatel[6]}",reply_markup=kb.menu_admin2)
+        @router.callback_query(F.data == "vibor1_admin")
+        async def vibor_polzovatelya_admin(msg: Message):
+            cursor1.execute('SELECT * FROM Users WHERE id=?', (id_polzovatelya,))
+            polzovatel = cursor1.fetchall()
+            await msg.answer(f"ID: {polzovatel[0]}\nФамилия: {polzovatel[1]}\nИмя: {polzovatel[2]}\nОтчество: {polzovatel[3]}\nОтдел: {polzovatel[4]}\nАдминистратор: нет\nБаланс: {polzovatel[6]}",reply_markup=kb.menu_admin2)
 
-            @router.callback_query(F.data == "admin_edit_name1")
-            async def edit1(msg: Message, state: FSMContext):
-                await msg.answer("Введите новую фамилию пользователя:")
-                await state.set_state(afl1)
+        @router.callback_query(F.data == "admin_edit_name1")
+        async def edit1(msg: Message, state: FSMContext):
+            await msg.answer("Введите новую фамилию пользователя:")
+            await state.set_state(afl1)
 
-            @router.message(afl1, F.text)
-            async def vvod_edit1(msg: Message):
-                text_admin = msg.text
-                cursor1.execute('UPDATE Users SET name1 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
-                await msg.answer("Фамилия пользователя изменена", reply_markup=kb.button_nazad_admin1)
+        @router.message(afl1, F.text)
+        async def vvod_edit1(msg: Message):
+            text_admin = msg.text
+            cursor1.execute('UPDATE Users SET name1 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
+            await msg.answer("Фамилия пользователя изменена", reply_markup=kb.button_nazad_admin1)
 
-            @router.callback_query(F.data == "admin_edit_name2")
-            async def edit2(msg: Message, state: FSMContext):
-                await msg.answer("Введите новое имя пользователя:")
-                await state.set_state(afl1)
+        @router.callback_query(F.data == "admin_edit_name2")
+        async def edit2(msg: Message, state: FSMContext):
+            await msg.answer("Введите новое имя пользователя:")
+            await state.set_state(afl1)
 
-            @router.message(afl1, F.text)
-            async def vvod_edit2(msg: Message):
-                text_admin = msg.text
-                cursor1.execute('UPDATE Users SET name2 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
-                await msg.answer("Имя пользователя изменено", reply_markup=kb.button_nazad_admin1)
+        @router.message(afl1, F.text)
+        async def vvod_edit2(msg: Message):
+            text_admin = msg.text
+            cursor1.execute('UPDATE Users SET name2 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
+            await msg.answer("Имя пользователя изменено", reply_markup=kb.button_nazad_admin1)
 
-            @router.callback_query(F.data == "admin_edit_name3")
-            async def edit3(msg: Message, state: FSMContext):
-                await msg.answer("Введите новое отчество пользователя:")
-                await state.set_state(afl1)
+        @router.callback_query(F.data == "admin_edit_name3")
+        async def edit3(msg: Message, state: FSMContext):
+            await msg.answer("Введите новое отчество пользователя:")
+            await state.set_state(afl1)
 
-            @router.message(afl1, F.text)
-            async def vvod_edit3(msg: Message):
-                text_admin = msg.text
-                cursor1.execute('UPDATE Users SET name3 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
-                await msg.answer("Отчество пользователя изменено", reply_markup=kb.button_nazad_admin1)
+        @router.message(afl1, F.text)
+        async def vvod_edit3(msg: Message):
+            text_admin = msg.text
+            cursor1.execute('UPDATE Users SET name3 = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
+            await msg.answer("Отчество пользователя изменено", reply_markup=kb.button_nazad_admin1)
 
-            @router.callback_query(F.data == "admin_edit_otdel")
-            async def edit4(msg: Message, state: FSMContext):
-                await msg.answer("Введите новый отдел пользователя:")
-                await state.set_state(afl1)
+        @router.callback_query(F.data == "admin_edit_otdel")
+        async def edit4(msg: Message, state: FSMContext):
+            await msg.answer("Введите новый отдел пользователя:")
+            await state.set_state(afl1)
 
-            @router.message(afl1, F.text)
-            async def vvod_edit4(msg: Message):
-                text_admin = msg.text
-                cursor1.execute('UPDATE Users SET otdel = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
-                await msg.answer("Отдел пользователя изменено", reply_markup=kb.button_nazad_admin1)
-
-
-            @router.callback_query(F.data == "admin_edit_admin")
-            async def edit5(msg: Message):
-                cursor1.execute('UPDATE Users SET admin = ? WHERE id_tg = ?', (True, id_polzovatelya))
-                await msg.answer("Статус пользователя изменен", reply_markup=kb.button_nazad_admin1)
-
-            @router.callback_query(F.data == "admin_edit_bal")
-            async def edit6(msg: Message, state: FSMContext):
-                await msg.answer("Введите новый баланс пользователя:")
-                await state.set_state(afl1)
-
-            @router.message(afl1, F.text)
-            async def vvod_edit6(msg: Message):
-                text_admin = ord(msg.text)
-                cursor1.execute('UPDATE Users SET balance = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
-                await msg.answer("Баланс пользователя изменен", reply_markup=kb.button_nazad_admin1)
+        @router.message(afl1, F.text)
+        async def vvod_edit4(msg: Message):
+            text_admin = msg.text
+            cursor1.execute('UPDATE Users SET otdel = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
+            await msg.answer("Отдел пользователя изменено", reply_markup=kb.button_nazad_admin1)
 
 
+        @router.callback_query(F.data == "admin_edit_admin")
+        async def edit5(msg: Message):
+            cursor1.execute('UPDATE Users SET admin = ? WHERE id_tg = ?', (True, id_polzovatelya))
+            await msg.answer("Статус пользователя изменен", reply_markup=kb.button_nazad_admin1)
 
-            @router.callback_query(F.data == "zakaz_user_view")
-            async def zakaz_edit(msg: Message):
-                await msg.answer("Выберите заказ:")
-                cursor3.execute('SELECT * FROM Zakaz_base')
-                zakazi = cursor3.fetchall()
+        @router.callback_query(F.data == "admin_edit_bal")
+        async def edit6(msg: Message, state: FSMContext):
+            await msg.answer("Введите новый баланс пользователя:")
+            await state.set_state(afl1)
 
-                for zakaz in zakazi:
-                    await msg.answer(f"ID: {zakaz[0]}\nID получателя: {zakaz[1]}\n",
-                                     reply_markup=kb.button_vibor_admin2)
-                    id_zakaz = zakaz[0]
-                    await msg.answer("", reply_markup=kb.menu_balance)
+        @router.message(afl1, F.text)
+        async def vvod_edit6(msg: Message):
+            text_admin = ord(msg.text)
+            cursor1.execute('UPDATE Users SET balance = ? WHERE id_tg = ?', (text_admin, id_polzovatelya))
+            await msg.answer("Баланс пользователя изменен", reply_markup=kb.button_nazad_admin1)
 
-                @router.callback_query(F.data == "vibor2_admin")
-                async def vibor_zakaza_admin(msg: Message):
-                    cursor3.execute('SELECT * FROM Zakaz_base WHERE id=?', (id_zakaz,))
-                    zakaz = cursor3.fetchall()
-                    await msg.answer(
+
+
+        @router.callback_query(F.data == "zakaz_user_view")
+        async def zakaz_edit(msg: Message):
+            await msg.answer("Выберите заказ:")
+            cursor3.execute('SELECT * FROM Zakaz_base')
+            zakazi = cursor3.fetchall()
+
+            for zakaz in zakazi:
+                await msg.answer(f"ID: {zakaz[0]}\nID получателя: {zakaz[1]}\n",
+                                 reply_markup=kb.button_vibor_admin2)
+                id_zakaz = zakaz[0]
+                await msg.answer("", reply_markup=kb.menu_balance)
+
+            @router.callback_query(F.data == "vibor2_admin")
+            async def vibor_zakaza_admin(msg: Message):
+                cursor3.execute('SELECT * FROM Zakaz_base WHERE id=?', (id_zakaz,))
+                zakaz = cursor3.fetchall()
+                await msg.answer(
                         f"ID: {zakaz[0]}\nID получателя: {zakaz[1]}\nЦена: {zakaz[2]}\nПункт получения: {zakaz[3]}\nСтатус: {zakaz[4]}\nСрок хранения: {zakaz[5]}\nБыл ли заказ продлен: {zakaz[6]}\n",
                         reply_markup=kb.menu_admin3)
 
-                @router.callback_query(F.data == "admin_edit_punkt")
-                async def edit1_1(msg: Message, state: FSMContext):
-                    await msg.answer("Введите пункт выдачи:")
-                    await state.set_state(afl1)
+            @router.callback_query(F.data == "admin_edit_punkt")
+            async def edit1_1(msg: Message, state: FSMContext):
+                await msg.answer("Введите пункт выдачи:")
+                await state.set_state(afl1)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit1_1(msg: Message):
-                    text_admin = msg.text
-                    cursor3.execute('UPDATE Zakaz_base SET punkt = ? WHERE id = ?', (text_admin, id_zakaz))
-                    await msg.answer("Пункт выдачи изменен", reply_markup=kb.button_nazad_admin2)
+            @router.message(afl1, F.text)
+            async def vvod_edit1_1(msg: Message):
+                text_admin = msg.text
+                cursor3.execute('UPDATE Zakaz_base SET punkt = ? WHERE id = ?', (text_admin, id_zakaz))
+                await msg.answer("Пункт выдачи изменен", reply_markup=kb.button_nazad_admin2)
 
-                @router.callback_query(F.data == "admin_edit_status")
-                async def edit1_2(msg: Message, state: FSMContext):
-                    await msg.answer("Введите статус заказа:")
-                    await state.set_state(afl1)
+            @router.callback_query(F.data == "admin_edit_status")
+            async def edit1_2(msg: Message, state: FSMContext):
+                await msg.answer("Введите статус заказа:")
+                await state.set_state(afl1)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit1_2(msg: Message):
-                    text_admin = msg.text
-                    cursor3.execute('UPDATE Zakaz_base SET status = ? WHERE id = ?', (text_admin, id_zakaz))
-                    await msg.answer("Статус заказа изменен", reply_markup=kb.button_nazad_admin2)
+            @router.message(afl1, F.text)
+            async def vvod_edit1_2(msg: Message):
+                text_admin = msg.text
+                cursor3.execute('UPDATE Zakaz_base SET status = ? WHERE id = ?', (text_admin, id_zakaz))
+                await msg.answer("Статус заказа изменен", reply_markup=kb.button_nazad_admin2)
 
-                @router.callback_query(F.data == "admin_edit_srok")
-                async def edit1_3(msg: Message, state: FSMContext):
-                    await msg.answer("Введите срок хранения:")
-                    await state.set_state(afl1)
+            @router.callback_query(F.data == "admin_edit_srok")
+            async def edit1_3(msg: Message, state: FSMContext):
+                await msg.answer("Введите срок хранения:")
+                await state.set_state(afl1)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit1_3(msg: Message):
-                    text_admin = msg.text
-                    cursor3.execute('UPDATE Zakaz_base SET srok = ? WHERE id = ?', (text_admin, id_zakaz))
-                    await msg.answer("Срок хранения изменен", reply_markup=kb.button_nazad_admin2)
+            @router.message(afl1, F.text)
+            async def vvod_edit1_3(msg: Message):
+                text_admin = msg.text
+                cursor3.execute('UPDATE Zakaz_base SET srok = ? WHERE id = ?', (text_admin, id_zakaz))
+                await msg.answer("Срок хранения изменен", reply_markup=kb.button_nazad_admin2)
 
-                @router.callback_query(F.data == "shop_tovari_view")
-                async def tovar_edit(msg: Message):
-                    await msg.answer("Выберите товар:")
-                    cursor2.execute('SELECT * FROM Shop_base')
-                    tovari = cursor2.fetchall()
+            @router.callback_query(F.data == "shop_tovari_view")
+            async def tovar_edit(msg: Message):
+                await msg.answer("Выберите товар:")
+                cursor2.execute('SELECT * FROM Shop_base')
+                tovari = cursor2.fetchall()
 
-                    for tovar in tovari:
-                        await msg.answer(f"ID: {tovar[0]}\nНазвание: {tovar[1]}\n",
-                                         reply_markup=kb.button_vibor_admin3)
-                        id_tov = tovar[0]
-                        await msg.answer("", reply_markup=kb.add_tovar)
+                for tovar in tovari:
+                    await msg.answer(f"ID: {tovar[0]}\nНазвание: {tovar[1]}\n",
+                                     reply_markup=kb.button_vibor_admin3)
+                    id_tov = tovar[0]
+                    await msg.answer("", reply_markup=kb.add_tovar)
 
-                @router.callback_query(F.data == "vibor3_admin")
-                async def vibor_tovara_admin(msg: Message):
-                    cursor2.execute('SELECT * FROM Shop_base WHERE id=?', (id_tov,))
-                    tovar = cursor2.fetchall()
-                    await bot.send_photo(tovar[3])
-                    await msg.answer(
-                        f"ID: {tovar[0]}\nНазвание товара: {tovar[1]}\nЦена товара: {tovar[2]}\n",
+            @router.callback_query(F.data == "vibor3_admin")
+            async def vibor_tovara_admin(msg: Message):
+                cursor2.execute('SELECT * FROM Shop_base WHERE id=?', (id_tov,))
+                tovar = cursor2.fetchall()
+                await bot.send_photo(tovar[3])
+                await msg.answer(
+                    f"ID: {tovar[0]}\nНазвание товара: {tovar[1]}\nЦена товара: {tovar[2]}\n",
                         reply_markup=kb.menu_admin4)
 
-                @router.callback_query(F.data == "admin_edit_namet")
-                async def edit2_1(msg: Message, state: FSMContext):
-                    await msg.answer("Введите наименование товара:")
-                    await state.set_state(afl1)
+            @router.callback_query(F.data == "admin_edit_namet")
+            async def edit2_1(msg: Message, state: FSMContext):
+                await msg.answer("Введите наименование товара:")
+                await state.set_state(afl1)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit2_1(msg: Message):
-                    text_admin = msg.text
-                    cursor2.execute('UPDATE Shop_base SET name = ? WHERE id = ?', (text_admin, id_tov))
-                    await msg.answer("Название товара изменено", reply_markup=kb.button_nazad_admin3)
+            @router.message(afl1, F.text)
+            async def vvod_edit2_1(msg: Message):
+                text_admin = msg.text
+                cursor2.execute('UPDATE Shop_base SET name = ? WHERE id = ?', (text_admin, id_tov))
+                await msg.answer("Название товара изменено", reply_markup=kb.button_nazad_admin3)
 
-                @router.callback_query(F.data == "admin_edit_price")
-                async def edit2_2(msg: Message, state: FSMContext):
-                    await msg.answer("Введите цену товара:")
-                    await state.set_state(afl1)
+            @router.callback_query(F.data == "admin_edit_price")
+            async def edit2_2(msg: Message, state: FSMContext):
+                await msg.answer("Введите цену товара:")
+                await state.set_state(afl1)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit2_2(msg: Message):
-                    text_admin = msg.text
-                    cursor2.execute('UPDATE Shop_base SET price = ? WHERE id = ?', (text_admin, id_tov))
-                    await msg.answer("Цена товара изменена", reply_markup=kb.button_nazad_admin3)
+            @router.message(afl1, F.text)
+            async def vvod_edit2_2(msg: Message):
+                text_admin = msg.text
+                cursor2.execute('UPDATE Shop_base SET price = ? WHERE id = ?', (text_admin, id_tov))
+                await msg.answer("Цена товара изменена", reply_markup=kb.button_nazad_admin3)
+            @router.callback_query(F.data == "admin_edit_image")
+            async def edit2_3(msg: Message, state: FSMContext):
+                await msg.answer("Пришлите изображение товара:")
+                await state.set_state(afl1)
 
-                @router.callback_query(F.data == "admin_edit_image")
-                async def edit2_3(msg: Message, state: FSMContext):
-                    await msg.answer("Пришлите изображение товара:")
-                    await state.set_state(afl1)
+            @router.message(afl1, F.text)
+            async def vvod_edit2_3(msg: Message):
+                await msg.photo[-1].download('img/am.jpg')
+                image_admin = open('img/am.jpg', 'rb')
+                emp_photo = convert_to_binary_data('img/am.jpg')
+                cursor2.execute('UPDATE Shop_base SET image = ? WHERE id = ?', (emp_photo, id_tov))
+                await msg.answer("Изображение товара изменено", reply_markup=kb.button_nazad_admin3)
 
-                @router.message(afl1, F.text)
-                async def vvod_edit2_3(msg: Message):
-                    await msg.photo[-1].download('img/am.jpg')
-                    image_admin = open('img/am.jpg', 'rb')
-                    emp_photo = convert_to_binary_data('img/am.jpg')
-                    cursor2.execute('UPDATE Shop_base SET image = ? WHERE id = ?', (emp_photo, id_tov))
-                    await msg.answer("Изображение товара изменено", reply_markup=kb.button_nazad_admin3)
+            @router.callback_query(F.data == "add_tovar")
+            async def add_tovar(msg: Message, state: FSMContext):
+                await  msg.answer("Введите название товара")
+                await state.set_state(Tovar1.name)
 
-                @router.callback_query(F.data == "add_tovar")
-                async def add_tovar(msg: Message, state: FSMContext):
-                    await  msg.answer("Введите название товара")
-                    await state.set_state(Tovar1.name)
+            @router.message(Tovar1.name, F.text)
+            async def add_tovar1(msg: Message, state: FSMContext):
+                Tovar.name = msg.text
+                await  msg.answer("Введите цену товара")
+                await state.set_state(Tovar1.price)
 
-                @router.message(Tovar1.name, F.text)
-                async def add_tovar1(msg: Message, state: FSMContext):
-                    Tovar.name = msg.text
-                    await  msg.answer("Введите цену товара")
-                    await state.set_state(Tovar1.price)
+            @router.message(Tovar1.price, F.text)
+            async def add_tovar2(msg: Message, state: FSMContext):
+                Tovar.price = ord(msg.text)
+                await  msg.answer("Отправьте изображаение товара")
+                await state.set_state(Tovar1.image)
 
-                @router.message(Tovar1.price, F.text)
-                async def add_tovar2(msg: Message, state: FSMContext):
-                    Tovar.price = ord(msg.text)
-                    await  msg.answer("Отправьте изображаение товара")
-                    await state.set_state(Tovar1.image)
-
-                @router.message(Tovar1.image, F.text)
-                async def add_tovar3(msg: Message, state: FSMContext):
-                    await msg.photo[-1].download('img/am.jpg')
-                    Tovar.image = open('img/am.jpg', 'rb')
-                    emp_photo = convert_to_binary_data('img/am.jpg')
-                    cursor2.execute('INSERT INTO Shop_base VALUES(?, ?, ?)', (Tovar.name, Tovar.price, Tovar.image))
-                    await msg.answer("Товар добавлен!", reply_markup=kb.menu_balance)
+            @router.message(Tovar1.image, F.text)
+            async def add_tovar3(msg: Message, state: FSMContext):
+                await msg.photo[-1].download('img/am.jpg')
+                Tovar.image = open('img/am.jpg', 'rb')
+                emp_photo = convert_to_binary_data('img/am.jpg')
+                cursor2.execute('INSERT INTO Shop_base VALUES(?, ?, ?)', (Tovar.name, Tovar.price, Tovar.image))
+                await msg.answer("Товар добавлен!", reply_markup=kb.menu_balance)
